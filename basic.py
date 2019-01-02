@@ -61,7 +61,7 @@ class team_reddit_api(object):
 
 		post.comments.replace_more(limit=100)
 
-		comments = {}
+		comments = []
 		count = 0
 
 		# limit to 'datapoints #' comments to save time
@@ -78,7 +78,7 @@ class team_reddit_api(object):
 				curr['anger'] = tones[0]['score']
 				curr['joy'] = tones[3]['score']
 				curr['sadness'] = tones[4]['score']
-				comments[count] = curr
+				comments.append(curr)
 				#print(count)
 			count += 1
 

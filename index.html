@@ -4,34 +4,26 @@
 		<meta charset="utf-8">
 	</head>
 	<body>
-		<button onclick="myFunction()">Click me</button>
 
-		<p id="demo"></p>
+		<select id="league">
+			<option value="nfl">NFL</option>
+			<option value="nba">NBA</option>
+		</select>
 
-		<script>
-		function myFunction() {
-			document.getElementById("demo").innerHTML = "Hello World";
+		<input type="text" id="team1">
+		<input type="text" id="team2">
 
-			var toneURL = "https://gateway.watsonplatform.net/tone-analyzer/api/v3/tone?version=2017-09-21";
+		<button id="submit" onclick="myFunction()">Submit</button>
 
-			var request = require("request");
-			var data = {};
-			data.text = "I hate you.";
-			request.post({
-				url: toneURL,
-				json: data,
-				auth: {
-					"apikey": "_4GZKtcskF4N4Ds6zfK32fJhOSGyPq99UlUFz0vz6YCi",
-					"iam_apikey_description": "Auto generated apikey during resource-key operation for Instance - crn:v1:bluemix:public:tone-analyzer:us-south:a/09df07cecc734653aa2ad5627c867f91:515257ba-554b-40fb-9872-6403b53cebe3::",
-					"iam_apikey_name": "auto-generated-apikey-4ff0dd6e-2e0a-4da0-bd0c-b2c73e4322b7",
-					"iam_role_crn": "crn:v1:bluemix:public:iam::::serviceRole:Manager",
-					"iam_serviceid_crn": "crn:v1:bluemix:public:iam-identity::a/09df07cecc734653aa2ad5627c867f91::serviceid:ServiceId-e99cb805-04d1-465c-b2a6-900d5414fdcf",
-					"url": "https://gateway.watsonplatform.net/tone-analyzer/api"
-				}
-			}, function(err, response, body) {
-				console.log(body);
-			})
-		}
-		</script>
+		<br>
+		
+		<div class="graph">
+			<canvas id="testchart"></canvas>
+		</div>
+
 	</body>
+
+	<script src="js/main.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+
 </html>
