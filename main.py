@@ -25,7 +25,7 @@ class MyController(object):
 		query = str(query)
 		output['query'] = query
 		try:
-			comments = self.db.search_posts("Patriots", query)
+			comments = self.db.search_posts("NFL", query)
 			output['comments'] = comments
 		except Exception as ex:
 			output['result'] = 'failure'

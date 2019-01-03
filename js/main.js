@@ -17,16 +17,19 @@ function myFunction() {
 	xhr.onload = function(e) {
 		resp = JSON.parse(xhr.responseText);
 		comments = resp["comments"];
+		comments.sort(function compare(kv1, kv2) {
+			return kv1['time'] - kv2['time'];
+		});
+		score = 0
 		for (var i=0; i<comments.length; i++) {
+			score += comments[i]['joy'];
+			score -= comments[i]['anger'];
 			var curr = {
 				'x': comments[i]['time'],
-				'y': comments[i]['joy']
+				'y': score
 			};
 			datalist.push(curr);
 		}
-		datalist.sort(function compare(kv1, kv2) {
-			return kv1['x'] - kv2['x'];
-		});
 
 		var ctx = document.getElementById("testchart").getContext("2d");
 		var scatter = new Chart(ctx, {

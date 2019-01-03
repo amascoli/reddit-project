@@ -5,7 +5,7 @@ import requests
 from praw.models import MoreComments
 from watson_developer_cloud import ToneAnalyzerV3
 
-datapoints = 200
+datapoints = 100
 
 class team_reddit_api(object):
 
