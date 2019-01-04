@@ -20,12 +20,12 @@ class MyController(object):
 		else:
 			self.db = db
 
-	def GET_QUERY(self, query):
+	def GET_QUERY(self, league, query):
 		output = {'result' : 'success'}
 		query = str(query)
 		output['query'] = query
 		try:
-			comments = self.db.search_posts("NFL", query)
+			comments = self.db.search_posts(league, query)
 			output['comments'] = comments
 		except Exception as ex:
 			output['result'] = 'failure'
@@ -44,10 +44,10 @@ def start_service():
 
 	dispatcher = cherrypy.dispatch.RoutesDispatcher()
 
-	dispatcher.connect('opt_query', '/:query', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('opt_query', '/:league/:query', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 	dispatcher.connect('opt_test', '/', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 
-	dispatcher.connect('get_query', '/:query', controller=mycon, action='GET_QUERY', conditions=dict(method=['GET']))
+	dispatcher.connect('get_query', '/:league/:query', controller=mycon, action='GET_QUERY', conditions=dict(method=['GET']))
 	dispatcher.connect('get_test', '/', controller=mycon, action='GET_TEST', conditions=dict(method=['GET']))
 
 	conf = {

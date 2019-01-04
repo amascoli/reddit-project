@@ -5,46 +5,11 @@ import requests
 from praw.models import MoreComments
 from watson_developer_cloud import ToneAnalyzerV3
 
-datapoints = 100
+datapoints = 250
 
 class team_reddit_api(object):
 
 	def __init__(self):
-
-		team_to_subreddit  = {
-			'steelers' : 'steelers',
-			'bengals' : 'bengals',
-			'browns' : 'Browns',
-			'ravens' : 'ravens',
-			'colts' : 'Colts',
-			'texans' : 'Texans',
-			'titans' : 'Tennesseetitans',
-			'jaguars' : 'Jaguars',
-			'patriots' : 'Patriots',
-			'jets' : 'nyjets',
-			'dolphins' : 'miamidolphins',
-			'bills' : 'buffalobills',
-			'chiefs' : 'KansasCityChiefs',
-			'chargers' : 'Chargers',
-			'raiders' : 'oaklandraiders',
-			'broncos' : 'DenverBroncos',
-			'vikings' : 'minnesotavikings',
-			'packers' : 'GreenBayPackers',
-			'bears' : 'CHIBears',
-			'lions' : 'detroitlions',
-			'saints' : 'Saints',
-			'panthers' : 'panthers',
-			'falcons' : 'falcons',
-			'buccaneers' : 'buccaneers',
-			'eagles' : 'eagles',
-			'cowboys' : 'cowboys',
-			'giants' : 'NYGiants',
-			'redskins' : 'Redskins',
-			'rams' : 'LosAngelesRams',
-			'seahawks' : 'Seahawks',
-			'49ers' : '49ers',
-			'cardinals' : 'AZCardinals',
-		}
 
 		id = 'w6vEbDuX26v3Cg'
 		secret = 'GkBu6pNbKoecHdzxnQZvCKyfsvA'
@@ -59,7 +24,10 @@ class team_reddit_api(object):
 
 	def get_comments(self, post):
 
-		post.comments.replace_more(limit=100)
+		try:
+			post.comments.replace_more(limit=100)
+		except Exception as e:
+			return 'Error: no post found'
 
 		comments = []
 		count = 0
@@ -87,13 +55,22 @@ class team_reddit_api(object):
 	# query will always be "team1 team2 game thread"
 	# can use team_to_subreddit to get team subreddits
 	def search_posts(self, subreddit, query):
-
+		leagues = ['nfl', 'nba']
 		subreddit = self.reddit.subreddit(subreddit)
-		for i in subreddit.search(query, limit=1):
+		for i in subreddit.search(query, limit=10):
 			theid = i
-
-		post = self.reddit.submission(id=theid)
-		return self.get_comments(post)
+			post = self.reddit.submission(id=theid)
+			# if league not team
+			if subreddit in leagues:
+				# make sure we get Game Thred (not Postgame or something else)
+				if post.link_flair_text == 'Game Thread':
+					print(post.title)
+					return self.get_comments(post)
+				else:
+					continue
+			# if team not league
+			else:
+				return self.get_comments(post)
 
 #if __name__ == '__main__':
 #	search_posts("NFL", "titans giants game thread")

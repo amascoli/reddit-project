@@ -2,21 +2,64 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<style>
+			#loaderdiv {
+				padding-top: 20px;
+				padding-left: 200px;
+			}
+			#loader {
+				border: 16px solid #f3f3f3;
+				border-top: 16px solid #3498db;
+				border-radius: 50%;
+				width: 120px;
+				height: 120px;
+				animation: spin 2s linear infinite;
+			}
+			@keyframes spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+		</style>
 	</head>
 	<body>
-
-		<select id="league">
-			<option value="nfl">NFL</option>
-			<option value="nba">NBA</option>
-		</select>
-
-		<input type="text" id="team1">
-		<input type="text" id="team2">
-
-		<button id="submit" onclick="myFunction()">Submit</button>
+		<table>
+			<tr>
+				<th>League</th>
+				<th>Team 1</th>
+				<th>Team 2</th>
+				<th>Graph</th>
+			</tr>
+			<tr>
+				<th>
+					<select id="league">
+						<option value="nfl">NFL</option>
+						<option value="nba">NBA</option>
+					</select>
+				</th>
+				<th>
+					<input list="nflteams" id="team1">
+				</th>
+				<th>
+					<input list="nflteams" id="team2">
+				</th>
+				<th>
+					<select id="graphtype">
+						<option value="league">League</option>
+						<option value="team1">Team 1</option>
+						<option value="team2">Team 2</option>
+					</select>
+				</th>
+				<th>
+					<button id="submit" onclick="myFunction()">Submit</button>
+				</th>
+			</tr>
+		</table>
 
 		<br>
 		
+		<div id="loaderdiv">
+			<div id="loader"></div>
+		</div>
 		<div class="graph">
 			<canvas id="testchart"></canvas>
 		</div>
