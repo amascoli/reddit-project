@@ -55,13 +55,13 @@ class team_reddit_api(object):
 	def search_posts(self, subreddit, query):
 		leagues = ['nfl', 'nba']
 		subreddit = self.reddit.subreddit(subreddit)
-		for i in subreddit.search(query, limit=5):
+		for i in subreddit.search(query, limit=10):
 			theid = i
 			post = self.reddit.submission(id=theid)
 			# if league not team
 			if subreddit in leagues:
 				# make sure we get Game Thred (not Postgame or something else)
-				if post.link_flair_text == 'Game Thread':
+				if post.link_flair_text == 'Game Thread' and post.title.startswith("Game Thread"):
 					print(post.title)
 					return self.get_comments(post)
 				else:

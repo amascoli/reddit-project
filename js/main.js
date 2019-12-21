@@ -7,6 +7,7 @@ var submit = document.getElementById("submit");
 var chart = document.getElementById("testchart");
 var graphtype = document.getElementById("graphtype");
 var loader = document.getElementById("loader");
+var titleText = document.getElementById("titleText");
 loader.style.display = "none";
 
 var nfldatalist = document.createElement("DATALIST");
@@ -44,11 +45,15 @@ function myFunction() {
 
 	loader.style.display = "block";
 	chart.style.display = "none";
+	titleText.innerHTML = "Fetching Game Thread Data";
 
 	var datalist = [];
 
 	subreddit = "";
 	query = "";
+	lineColor = "#000000";
+	fillColor = "#C0C0C0";
+
 	if (graphtype.value=="league") {
 		subreddit = league.value;
 		query = team1.value + "%20" + team2.value + "%20game%20thread";
@@ -68,6 +73,10 @@ function myFunction() {
 
 		if (league.value == "nfl") {
 			var team_data = nfl_team_data[teamname1]
+
+			fillColor = team_data['color1'];
+			lineColor = team_data['color2'];
+
 			if (team_data['abbreviations']) {
 				teamname1 = nfl_team_data[team1.value]['abbreviation'];
 				teamname2 = nfl_team_data[team2.value]['abbreviation'];
@@ -103,15 +112,7 @@ function myFunction() {
 
 		console.log(resp);
 
-		var urlheader = document.createElement("HEADER");
-		urlheader.setAttribute("id", "myHeader");
-		document.body.appendChild(urlheader);
-	  
-		var urltext = document.createElement("H3"); 
-		var urltextnode = document.createTextNode(resp["comments"]["name"]);
-		urltext.appendChild(urltextnode);
-	
-		document.getElementById("myHeader").appendChild(urltext);
+		titleText.innerHTML = resp["comments"]["name"];
 
 		var comments = resp["comments"]["comments"];
 
@@ -125,7 +126,7 @@ function myFunction() {
 
 			console.log(comments[i]);
 
-			score = score - 0.5 + comments[i]['score'];
+			score = score - 0.4 + comments[i]['score'];
 
 			var curr = {
 				'x': comments[i]['time'],
@@ -140,7 +141,15 @@ function myFunction() {
 			data: {
 				datasets: [{
 					label: 'Scatter Dataset',
-					data: datalist
+					data: datalist,
+					borderColor: lineColor,
+					pointBorderColor: lineColor,
+					pointBackgroundColor: lineColor,
+					pointHoverBackgroundColor: lineColor,
+					pointHoverBorderColor: lineColor,
+					fill: true,
+					backgroundColor: fillColor,
+					lineTension: 0.1,
 				}]
 			},
 			options: {
