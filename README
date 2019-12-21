@@ -7,3 +7,10 @@ The purpose of this application is to use a text sentiment analyzer to analyze a
 Ideally, the reddit reactions will be compared with the ESPN win percentage tracker and there will be some correlation.
 
 Currently using Indico.io as a text sentiment analyzer.
+
+TODO:
+* Set a data range for posts to search.
+* Instead of Team 1 and Team 2, do home and away teams.
+* Error handling for if/when game thread not found.
+* Do multiple graphs at once for easy comparison.
+* Get win probability graphs from ESPN.

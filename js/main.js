@@ -8,6 +8,9 @@ var chart = document.getElementById("testchart");
 var graphtype = document.getElementById("graphtype");
 var loader = document.getElementById("loader");
 var titleText = document.getElementById("titleText");
+var subredditText = document.getElementById("subredditText");
+
+subredditText.style.display = "none";
 loader.style.display = "none";
 
 var nfldatalist = document.createElement("DATALIST");
@@ -45,7 +48,8 @@ function myFunction() {
 
 	loader.style.display = "block";
 	chart.style.display = "none";
-	titleText.innerHTML = "Fetching Game Thread Data";
+	subredditText.display = "none";
+	titleText.innerHTML = "Fetching Game Thread Data...";
 
 	var datalist = [];
 
@@ -112,6 +116,8 @@ function myFunction() {
 
 		console.log(resp);
 
+		subredditText.style.display = "block";
+		subredditText.innerHTML = "r/" + subreddit;
 		titleText.innerHTML = resp["comments"]["name"];
 
 		var comments = resp["comments"]["comments"];

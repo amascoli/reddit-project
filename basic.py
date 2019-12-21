@@ -5,7 +5,7 @@ import requests
 import indicoio
 from praw.models import MoreComments
 
-datapoints = 100
+datapoints = 10
 
 class team_reddit_api(object):
 
