@@ -2,10 +2,10 @@ import praw
 import json
 import math
 import requests
+import indicoio
 from praw.models import MoreComments
-from watson_developer_cloud import ToneAnalyzerV3
 
-datapoints = 250
+datapoints = 10
 
 class team_reddit_api(object):
 
@@ -14,19 +14,15 @@ class team_reddit_api(object):
 		id = 'w6vEbDuX26v3Cg'
 		secret = 'GkBu6pNbKoecHdzxnQZvCKyfsvA'
 
-		self.reddit = praw.Reddit(user_agent="testing", client_id=id, client_secret=secret)
+		indicoio.config.api_key = '664989ce0551a7fb18da6606494e73f9'
 
-		self.tone_analyzer = ToneAnalyzerV3(
-			iam_apikey='_4GZKtcskF4N4Ds6zfK32fJhOSGyPq99UlUFz0vz6YCi',
-			version='2016-05-19',
-			url='https://gateway.watsonplatform.net/tone-analyzer/api'
-		)
+		self.reddit = praw.Reddit(user_agent="testing", client_id=id, client_secret=secret)
 
 	def get_comments(self, post):
 
 		try:
 			post.comments.replace_more(limit=100)
-		except Exception as e:
+		except Exception:
 			return 'Error: no post found'
 
 		comments = []
@@ -38,16 +34,9 @@ class team_reddit_api(object):
 		for comment in post.comments.list():
 			if (count/interval).is_integer():
 				curr = {}
-				curr["body"] = comment.body
-				curr["time"] = comment.created_utc
-				# tone analysis
-				json_out = self.tone_analyzer.tone({'text': comment.body}, 'application/json').get_result()
-				tones = json_out['document_tone']['tone_categories'][0]['tones']
-				curr['anger'] = tones[0]['score']
-				curr['joy'] = tones[3]['score']
-				curr['sadness'] = tones[4]['score']
-				comments.append(curr)
-				#print(count)
+				curr['body'] = comment.body
+				curr['time'] = comment.created_utc
+				curr['score'] = indicoio.sentiment(comment.body)
 			count += 1
 
 		return comments
@@ -74,3 +63,5 @@ class team_reddit_api(object):
 
 #if __name__ == '__main__':
 #	search_posts("NFL", "titans giants game thread")
+#	indicoio.config.api_key = '664989ce0551a7fb18da6606494e73f9'
+#	print(indicoio.sentiment("this is a great sentence"))

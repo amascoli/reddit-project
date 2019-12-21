@@ -146,8 +146,7 @@ function myFunction() {
 			var seconds = "0"+date.getSeconds();
 			var formattedTime = hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
 
-			score += comments[i]['joy'];
-			score -= comments[i]['anger'];
+			score += comments[i]['score'];
 			var curr = {
 				'x': comments[i]['time'],
 				'y': score
