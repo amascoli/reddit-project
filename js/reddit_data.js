@@ -65,6 +65,7 @@ var team_to_subreddit = {
 	'Washington Wizards' : 'washingtonwizards'
 }
 
+// Detailed date for each nfl team
 var nfl_team_data =  {
 	'Arizona Cardinals' : {
 		'location': 'Arizona',
@@ -336,8 +337,8 @@ var nfl_team_data =  {
 		'themself': true,
 		'abbreviation': 'NE',
 		'flair': null,
-		'color1': '#0A2342',
-		'color2': '#B0B7BD',
+		'color1': '#002244',
+		'color2': '#C60C30',
 	},
 	'New Orleans Saints' : {
 		'location': 'New Orleans',
