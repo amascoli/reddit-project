@@ -5,7 +5,7 @@ import requests
 import indicoio
 from praw.models import MoreComments
 
-datapoints = 10
+datapoints = 100
 
 class team_reddit_api(object):
 
@@ -19,6 +19,8 @@ class team_reddit_api(object):
 		self.reddit = praw.Reddit(user_agent="testing", client_id=id, client_secret=secret)
 
 	def get_comments(self, post):
+
+		response = {'name': post.title}
 
 		try:
 			post.comments.replace_more(limit=100)
@@ -44,14 +46,16 @@ class team_reddit_api(object):
 
 			count += 1
 
-		return comments
+		response['comments'] = comments
+		
+		return response
 
 	# query will always be "team1 team2 game thread"
 	# can use team_to_subreddit to get team subreddits
 	def search_posts(self, subreddit, query):
 		leagues = ['nfl', 'nba']
 		subreddit = self.reddit.subreddit(subreddit)
-		for i in subreddit.search(query, limit=10):
+		for i in subreddit.search(query, limit=5):
 			theid = i
 			post = self.reddit.submission(id=theid)
 			# if league not team

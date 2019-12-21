@@ -9,73 +9,6 @@ var graphtype = document.getElementById("graphtype");
 var loader = document.getElementById("loader");
 loader.style.display = "none";
 
-var team_to_subreddit = {
-	// nfl 0-31
-	'Arizona Cardinals' : 'AZCardinals',
-	'Atlanta Falcons' : 'falcons',
-	'Baltimore Ravens' : 'ravens',
-	'Buffalo Bills' : 'buffalobills',
-	'Carolina Panthers' : 'panthers',
-	'Chicago Bears' : 'CHIBears',
-	'Cincinnati Bengals' : 'bengals',
-	'Cleveland Browns' : 'browns',
-	'Dallas Cowboys' : 'cowboys',
-	'Denver Broncos' : 'DenverBroncos',
-	'Detroit Lions' : 'detroitlions',
-	'Green Bay Packers' : 'GreenBayPackers',
-	'Houston Texans' : 'Texans',
-	'Indianapolis Colts' : 'colts',
-	'Jacksonville Jaguars' : 'Jaguars',
-	'Kansas City Chiefs' : 'KansasCityChiefs',
-	'Los Angeles Chargers' : 'Chargers',
-	'Los Angeles Rams' : 'LosAngelesRams',
-	'Miami Dolphins' : 'miamidolphins',
-	'Minnesota Vikings' : 'minnesotavikings',
-	'New England Patriots' : 'Patriots',
-	'New Orleans Saints' : 'Saints',
-	'New York Giants' : 'NYGiants',
-	'New York Jets' : 'nyjets',
-	'Oakland Raiders' : 'oaklandraiders',
-	'Philadelphia Eagles' : 'eagles',
-	'Pittsburgh Steelers' : 'steelers',
-	'San Francisco 49ers' : '49ers',
-	'Seattle Seahawks' : 'Seahawks',
-	'Tampa Bay Buccaneers' : 'buccaneers',
-	'Tennessee Titans' : 'Tennesseetitans',
-	'Washington Redskins' : 'Redskins',
-	// nba 32-61
-	'Atlanta Hawks' : 'AtlantaHawks',
-	'Boston Celtics' : 'bostonceltics',
-	'Brooklyn Nets' : 'GoNets',
-	'Charlotte Hornets' : 'CharlotteHornets',
-	'Chicago Bulls' : 'chicagobulls',
-	'Cleveland Cavaliers' : 'clevelandcavs',
-	'Dallas Mavericks' : 'Mavericks',
-	'Denver Nuggets' : 'denvernuggets',
-	'Detroit Pistons' : 'DetroitPistons',
-	'Golden State Warriors' : 'warriors',
-	'Houston Rockets' : 'rockets',
-	'Indiana Pacers' : 'pacers',
-	'Los Angeles Clippers' : 'LAClippers',
-	'Los Angeles Lakers' : 'lakers',
-	'Memphis Grizzlies' : 'memphisgrizzlies',
-	'Miami Heat' : 'heat',
-	'Milwaukee Bucks' : 'MkeBucks',
-	'Minnesota Timberwolves' : 'timberwolves',
-	'New Orleans Pelicans' : 'NOLAPelicans',
-	'New York Knicks' : 'NYKnicks',
-	'Oklahoma City Thunder' : 'Thunder',
-	'Orlando Magic' : 'orlandomagic',
-	'Philadelphia 76ers' : 'sixers',
-	'Phoenix Suns' : 'suns',
-	'Porland Trail Blazers' : 'ripcity',
-	'Sacramento Kings' : 'kings',
-	'San Antonio Spurs' : 'NBASpurs',
-	'Toronto Raptors' : 'torontoraptors',
-	'Utah Jazz' : 'UtahJazz',
-	'Washington Wizards' : 'washingtonwizards'
-}
-
 var nfldatalist = document.createElement("DATALIST");
 nfldatalist.setAttribute("id", "nflteams");
 document.body.appendChild(nfldatalist);
@@ -115,25 +48,49 @@ function myFunction() {
 	var datalist = [];
 
 	subreddit = "";
-	if (graphtype.value=="league")
+	query = "";
+	if (graphtype.value=="league") {
 		subreddit = league.value;
-	else if (graphtype.value=="team1")
-		subreddit = team_to_subreddit[team1.value];
-	else
-		subreddit = team_to_subreddit[team2.value];
+		query = team1.value + "%20" + team2.value + "%20game%20thread";
+	}
+	else {
+		var teamname1, teamname2;
+		if (graphtype.value=="team1") {
+			subreddit = team_to_subreddit[team1.value];
+			teamname1 = team1.value;
+			teamname2 = team2.value;
+		}
+		else {
+			subreddit = team_to_subreddit[team2.value];
+			teamname1 = team2.value;
+			teamname2 = team1.value;
+		}
 
-	query = team1.value + "%20" + team2.value + "%20game%20thread";
+		if (league.value == "nfl") {
+			var team_data = nfl_team_data[teamname1]
+			if (team_data['abbreviations']) {
+				teamname1 = nfl_team_data[team1.value]['abbreviation'];
+				teamname2 = nfl_team_data[team2.value]['abbreviation'];
+			}
+			else if (team_data['locations']) {
+				teamname1 = nfl_team_data[team1.value]['location'] + "%20" + nfl_team_data[team1.value]['name'];
+				teamname2 = nfl_team_data[team2.value]['location'] + "%20" + nfl_team_data[team2.value]['name'];
+			}
+			else {
+				teamname1 = nfl_team_data[team1.value]['name'];
+				teamname2 = nfl_team_data[team2.value]['name'];
+			}
+
+			if (!team_data['themself']) teamname1 = "";
+
+			query = team_data['prefix'] + "%20" + teamname1 + "%20" + teamname2;
+		}
+		else query = team1.value + "%20" + team2.value + "%20game%20thread";
+	}
+
+	console.log(query);
+
 	url = baseURL + subreddit + "/" + query;
-
-	var urlheader = document.createElement("HEADER");
-	urlheader.setAttribute("id", "myHeader");
-	document.body.appendChild(urlheader);
-  
-	var urltext = document.createElement("H3"); 
-	var urltextnode = document.createTextNode(url);
-	urltext.appendChild(urltextnode);
-
-	document.getElementById("myHeader").appendChild(urltext);
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
@@ -144,24 +101,35 @@ function myFunction() {
 
 		resp = JSON.parse(xhr.responseText);
 
-		comments = resp["comments"];
+		console.log(resp);
+
+		var urlheader = document.createElement("HEADER");
+		urlheader.setAttribute("id", "myHeader");
+		document.body.appendChild(urlheader);
+	  
+		var urltext = document.createElement("H3"); 
+		var urltextnode = document.createTextNode(resp["comments"]["name"]);
+		urltext.appendChild(urltextnode);
+	
+		document.getElementById("myHeader").appendChild(urltext);
+
+		var comments = resp["comments"]["comments"];
+
 		comments.sort(function compare(kv1, kv2) {
 			return kv1['time'] - kv2['time'];
 		});
 
-		for (var i=0; i<comments.length; i++) {
+		var score = 0;
 
-			var date = new Date(comments[i]['time']*1000);
-			var hours = date.getHours();
-			var minutes = "0"+date.getMinutes();
-			var seconds = "0"+date.getSeconds();
-			var formattedTime = hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
+		for (var i=0; i<comments.length; i++) {
 
 			console.log(comments[i]);
 
+			score = score - 0.5 + comments[i]['score'];
+
 			var curr = {
 				'x': comments[i]['time'],
-				'y': comments[i]['score'],
+				'y': score,
 			};
 			datalist.push(curr);
 		}
@@ -179,7 +147,16 @@ function myFunction() {
 				scales: {
 					xAxes: [{
 						type: 'linear',
-						position: 'bottom'
+						position: 'bottom',
+						ticks: {
+							callback: function(value, index, values) {
+								var date = new Date(value*1000);
+								var hours = date.getHours();
+								var minutes = "0"+date.getMinutes();
+								var seconds = "0"+date.getSeconds();
+								return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
+							}
+						}
 					}]
 				}
 			}
