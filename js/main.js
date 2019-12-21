@@ -125,6 +125,16 @@ function myFunction() {
 	query = team1.value + "%20" + team2.value + "%20game%20thread";
 	url = baseURL + subreddit + "/" + query;
 
+	var urlheader = document.createElement("HEADER");
+	urlheader.setAttribute("id", "myHeader");
+	document.body.appendChild(urlheader);
+  
+	var urltext = document.createElement("H3"); 
+	var urltextnode = document.createTextNode(url);
+	urltext.appendChild(urltextnode);
+
+	document.getElementById("myHeader").appendChild(urltext);
+
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", url, true);
 	xhr.onload = function(e) {
@@ -133,11 +143,12 @@ function myFunction() {
 		chart.style.display = "block";
 
 		resp = JSON.parse(xhr.responseText);
+
 		comments = resp["comments"];
 		comments.sort(function compare(kv1, kv2) {
 			return kv1['time'] - kv2['time'];
 		});
-		score = 0
+
 		for (var i=0; i<comments.length; i++) {
 
 			var date = new Date(comments[i]['time']*1000);
@@ -146,10 +157,11 @@ function myFunction() {
 			var seconds = "0"+date.getSeconds();
 			var formattedTime = hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
 
-			score += comments[i]['score'];
+			console.log(comments[i]);
+
 			var curr = {
 				'x': comments[i]['time'],
-				'y': score
+				'y': comments[i]['score'],
 			};
 			datalist.push(curr);
 		}

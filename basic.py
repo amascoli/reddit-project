@@ -37,6 +37,11 @@ class team_reddit_api(object):
 				curr['body'] = comment.body
 				curr['time'] = comment.created_utc
 				curr['score'] = indicoio.sentiment(comment.body)
+
+				print(curr['score'])
+
+				comments.append(curr)
+
 			count += 1
 
 		return comments
@@ -61,7 +66,7 @@ class team_reddit_api(object):
 			else:
 				return self.get_comments(post)
 
-#if __name__ == '__main__':
-#	search_posts("NFL", "titans giants game thread")
+if __name__ == '__main__':
+	team_reddit_api().search_posts("NFL", "titans giants game thread")
 #	indicoio.config.api_key = '664989ce0551a7fb18da6606494e73f9'
 #	print(indicoio.sentiment("this is a great sentence"))
