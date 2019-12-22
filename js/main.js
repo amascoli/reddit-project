@@ -108,7 +108,13 @@ function myFunction() {
 	url = baseURL + subreddit + "/" + query;
 
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", url, true);
+	xhr.open("POST", url, true);
+	data = {
+		'startDate': startDate.value,
+		'endDate': endDate.value,
+	};
+	json = JSON.stringify(data);
+
 	xhr.onload = function(e) {
 
 		loader.style.display = "none";
@@ -180,5 +186,5 @@ function myFunction() {
 		});
 
 	}
-	xhr.send(null);
+	xhr.send(json);
 }

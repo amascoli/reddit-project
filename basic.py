@@ -4,6 +4,7 @@ import math
 import requests
 import indicoio
 from praw.models import MoreComments
+from datetime import datetime, timezone
 
 datapoints = 10
 
@@ -40,8 +41,6 @@ class team_reddit_api(object):
 				curr['time'] = comment.created_utc
 				curr['score'] = indicoio.sentiment(comment.body)
 
-				print(curr['score'])
-
 				comments.append(curr)
 
 			count += 1
@@ -52,9 +51,15 @@ class team_reddit_api(object):
 
 	# query will always be "team1 team2 game thread"
 	# can use team_to_subreddit to get team subreddits
-	def search_posts(self, subreddit, query):
+	def search_posts(self, subreddit, query, payload):
 		leagues = ['nfl', 'nba']
 		subreddit = self.reddit.subreddit(subreddit)
+
+		startDate = datetime.strptime(payload['startDate'], '%Y-%m-%d')
+		startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
+		endDate = datetime.strptime(payload['endDate'], '%Y-%m-%d')
+		endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
+
 		for i in subreddit.search(query, limit=10):
 			theid = i
 			post = self.reddit.submission(id=theid)
@@ -62,16 +67,22 @@ class team_reddit_api(object):
 			postTime = post.created_utc
 
 			# if league not team
+
+			# time filters not working yet
+
 			if subreddit in leagues:
 				# make sure we get Game Thred (not Postgame or something else)
-				if post.link_flair_text == 'Game Thread' and post.title.startswith("Game Thread"):
+				if post.link_flair_text == 'Game Thread' and post.title.startswith("Game Thread") and postTime >= startUtc and postTime <= endUtc:
 					print(post.title)
 					return self.get_comments(post)
 				else:
 					continue
 			# if team not league
 			else:
-				return self.get_comments(post)
+				if postTime >= startUtc and postTime <= endUtc:
+					return self.get_comments(post)
+				else:
+					continue
 
 if __name__ == '__main__':
 	team_reddit_api().search_posts("NFL", "titans giants game thread")

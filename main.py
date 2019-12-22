@@ -20,19 +20,20 @@ class MyController(object):
 		else:
 			self.db = db
 
-	def GET_QUERY(self, league, query):
+	def POST_QUERY(self, league, query):
 		output = {'result' : 'success'}
 		query = str(query)
 		output['query'] = query
 		try:
-			comments = self.db.search_posts(league, query)
+			payload = json.loads(cherrypy.request.body.read().decode("utf-8"))
+			comments = self.db.search_posts(league, query, payload)
 			output['comments'] = comments
 		except Exception as ex:
 			output['result'] = 'failure'
 			output['message'] = str(ex)
 		return json.dumps(output)
 
-	def GET_TEST(self):
+	def POST_TEST(self):
 		output = {'result' : 'success'}
 		output['message'] = 'test'
 		return json.dumps(output)
@@ -47,8 +48,8 @@ def start_service():
 	dispatcher.connect('opt_query', '/:league/:query', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 	dispatcher.connect('opt_test', '/', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 
-	dispatcher.connect('get_query', '/:league/:query', controller=mycon, action='GET_QUERY', conditions=dict(method=['GET']))
-	dispatcher.connect('get_test', '/', controller=mycon, action='GET_TEST', conditions=dict(method=['GET']))
+	dispatcher.connect('post_query', '/:league/:query', controller=mycon, action='POST_QUERY', conditions=dict(method=['POST']))
+	dispatcher.connect('post_test', '/', controller=mycon, action='POST_TEST', conditions=dict(method=['POST']))
 
 	conf = {
 		'global' : {
