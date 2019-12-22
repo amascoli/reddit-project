@@ -9,6 +9,8 @@ var graphtype = document.getElementById("graphtype");
 var loader = document.getElementById("loader");
 var titleText = document.getElementById("titleText");
 var subredditText = document.getElementById("subredditText");
+var startDate = document.getElementById("startDate");
+var endDate = document.getElementById("endDate");
 
 subredditText.style.display = "none";
 loader.style.display = "none";

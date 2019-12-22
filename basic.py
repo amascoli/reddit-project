@@ -58,6 +58,9 @@ class team_reddit_api(object):
 		for i in subreddit.search(query, limit=10):
 			theid = i
 			post = self.reddit.submission(id=theid)
+
+			postTime = post.created_utc
+
 			# if league not team
 			if subreddit in leagues:
 				# make sure we get Game Thred (not Postgame or something else)
