@@ -66,23 +66,23 @@ class team_reddit_api(object):
 
 			postTime = post.created_utc
 
-			# if league not team
-
-			# time filters not working yet
+			if not self.post_in_date_range(startUtc, endUtc, postTime):
+				print ('not in range')
+				continue
 
 			if subreddit in leagues:
 				# make sure we get Game Thred (not Postgame or something else)
-				if post.link_flair_text == 'Game Thread' and post.title.startswith("Game Thread") and postTime >= startUtc and postTime <= endUtc:
+				if post.link_flair_text == 'Game Thread' and post.title.startswith("Game Thread"):
 					print(post.title)
 					return self.get_comments(post)
 				else:
 					continue
 			# if team not league
 			else:
-				if postTime >= startUtc and postTime <= endUtc:
-					return self.get_comments(post)
-				else:
-					continue
+				return self.get_comments(post)
+
+	def post_in_date_range(self, start, end, post):
+		return post >= start and post <= end
 
 if __name__ == '__main__':
 	team_reddit_api().search_posts("NFL", "titans giants game thread")
