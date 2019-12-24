@@ -10,6 +10,11 @@ Currently using Indico.io as a text sentiment analyzer.
 
 TODO:
 * Set a data range for posts to search.
+* Error checking on inputs.
+  * Teams cannot be the same.
+  * Valid date range.
+  * When no game found in date range.
+* Change browser tab picture and lable.
 * Instead of Team 1 and Team 2, do home and away teams.
 * Error handling for if/when game thread not found.
 * Do multiple graphs at once for easy comparison.
