@@ -62,7 +62,7 @@ function myFunction() {
 
 	if (graphtype.value=="league") {
 		subreddit = league.value;
-		query = team1.value + "%20" + team2.value + "%20game%20thread";
+		query = team1.value + " " + team2.value + " game thread";
 	}
 	else {
 		var teamname1, teamname2;
@@ -88,8 +88,8 @@ function myFunction() {
 				teamname2 = nfl_team_data[team2.value]['abbreviation'];
 			}
 			else if (team_data['locations']) {
-				teamname1 = nfl_team_data[team1.value]['location'] + "%20" + nfl_team_data[team1.value]['name'];
-				teamname2 = nfl_team_data[team2.value]['location'] + "%20" + nfl_team_data[team2.value]['name'];
+				teamname1 = nfl_team_data[team1.value]['location'] + " " + nfl_team_data[team1.value]['name'];
+				teamname2 = nfl_team_data[team2.value]['location'] + " " + nfl_team_data[team2.value]['name'];
 			}
 			else {
 				teamname1 = nfl_team_data[team1.value]['name'];
@@ -98,20 +98,22 @@ function myFunction() {
 
 			if (!team_data['themself']) teamname1 = "";
 
-			query = team_data['prefix'] + "%20" + teamname1 + "%20" + teamname2;
+			query = team_data['prefix'] + " " + teamname1 + " " + teamname2;
 		}
-		else query = team1.value + "%20" + team2.value + "%20game%20thread";
+		else query = team1.value + " " + team2.value + " game thread";
 	}
 
-	console.log(query);
-
-	url = baseURL + subreddit + "/" + query;
+	url = baseURL + "/graph";
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
 	data = {
 		'startDate': startDate.value,
 		'endDate': endDate.value,
+		'team1': team1.value,
+		'team2': team2.value,
+		'query': query,
+		'subreddit': subreddit,
 	};
 	json = JSON.stringify(data);
 
@@ -123,6 +125,11 @@ function myFunction() {
 		resp = JSON.parse(xhr.responseText);
 
 		console.log(resp);
+
+		if (resp["comments"]["errorStatus"] == true) {
+			titleText.innerHTML = resp["comments"]["errorMessage"];
+			return null;
+		}
 
 		subredditText.style.display = "block";
 		subredditText.innerHTML = "r/" + subreddit;

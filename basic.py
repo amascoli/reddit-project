@@ -46,23 +46,45 @@ class team_reddit_api(object):
 			count += 1
 
 		response['comments'] = comments
+
+		response['errorStatus'] = False
 		
 		return response
 
 	# query will always be "team1 team2 game thread"
 	# can use team_to_subreddit to get team subreddits
-	def search_posts(self, subreddit, query, payload):
+	def search_posts(self, payload):
 		leagues = ['nfl', 'nba']
-		subreddit = self.reddit.subreddit(subreddit)
+		subreddit = self.reddit.subreddit(payload['subreddit'])
 
-		startDate = datetime.strptime(payload['startDate'], '%Y-%m-%d')
-		startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
-		endDate = datetime.strptime(payload['endDate'], '%Y-%m-%d')
-		endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
+		if (payload['startDate'] != ""):
+			startDate = datetime.strptime(payload['startDate'], '%Y-%m-%d')
+			startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
+		else:
+			startDate = datetime.strptime('2000-01-01', '%Y-%m-%d')
+			startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
 
-		for i in subreddit.search(query, limit=10):
-			theid = i
-			post = self.reddit.submission(id=theid)
+		if (payload['endDate'] != ""):
+			endDate = datetime.strptime(payload['endDate'], '%Y-%m-%d')
+			endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
+		else:
+			endDate = datetime.strptime('2030-01-01', '%Y-%m-%d')
+			endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
+
+		team1 = payload['team1']
+		team2 = payload['team2']
+
+		response = {'errorStatus': True}
+
+		if team1 == team2:
+			response['errorMessage'] = 'Teams selected cannot be the same.'
+			return response
+		elif endUtc <= startUtc:
+			response['errorMessage'] = 'Please enter a valid date range.'
+			return response
+
+		for i in subreddit.search(payload['query'], limit=10):
+			post = self.reddit.submission(id=i)
 
 			postTime = post.created_utc
 
@@ -80,6 +102,9 @@ class team_reddit_api(object):
 			# if team not league
 			else:
 				return self.get_comments(post)
+		
+		response['errorMessage'] = 'No game thread found for teams in selected date range.'
+		return response
 
 	def post_in_date_range(self, start, end, post):
 		return post >= start and post <= end
