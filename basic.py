@@ -26,7 +26,9 @@ class team_reddit_api(object):
 		try:
 			post.comments.replace_more(limit=100)
 		except Exception:
-			return 'Error: no post found'
+			response['errorStatus'] = True
+			response['errorMessage'] = 'No post found'
+			return response
 
 		comments = []
 		count = 0
@@ -57,18 +59,15 @@ class team_reddit_api(object):
 		leagues = ['nfl', 'nba']
 		subreddit = self.reddit.subreddit(payload['subreddit'])
 
-		if (payload['startDate'] != ""):
-			startDate = datetime.strptime(payload['startDate'], '%Y-%m-%d')
-			startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
+		if (payload['gameDate'] != ""):
+			startDate = datetime.strptime(payload['gameDate'], '%Y-%m-%d')
+			startUtc = startDate.replace(tzinfo=timezone.utc).timestamp() - 86400
+			endDate = datetime.strptime(payload['gameDate'], '%Y-%m-%d')
+			endUtc = endDate.replace(tzinfo=timezone.utc).timestamp() + 86400 + 28800
 		else:
 			startDate = datetime.strptime('2000-01-01', '%Y-%m-%d')
 			startUtc = startDate.replace(tzinfo=timezone.utc).timestamp()
-
-		if (payload['endDate'] != ""):
-			endDate = datetime.strptime(payload['endDate'], '%Y-%m-%d')
-			endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
-		else:
-			endDate = datetime.strptime('2030-01-01', '%Y-%m-%d')
+			endDate = datetime.strptime('2030-12-31', '%Y-%m-%d')
 			endUtc = endDate.replace(tzinfo=timezone.utc).timestamp()
 
 		team1 = payload['team1']
@@ -83,13 +82,16 @@ class team_reddit_api(object):
 			response['errorMessage'] = 'Please enter a valid date range.'
 			return response
 
+		print(startUtc)
+		print(endUtc)
+
 		for i in subreddit.search(payload['query'], limit=10):
 			post = self.reddit.submission(id=i)
 
 			postTime = post.created_utc
+			print (postTime)
 
 			if not self.post_in_date_range(startUtc, endUtc, postTime):
-				print ('not in range')
 				continue
 
 			if subreddit in leagues:

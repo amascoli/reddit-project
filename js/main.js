@@ -9,8 +9,7 @@ var graphtype = document.getElementById("graphtype");
 var loader = document.getElementById("loader");
 var titleText = document.getElementById("titleText");
 var subredditText = document.getElementById("subredditText");
-var startDate = document.getElementById("startDate");
-var endDate = document.getElementById("endDate");
+var gameDate = document.getElementById("gameDate");
 
 subredditText.style.display = "none";
 loader.style.display = "none";
@@ -103,13 +102,14 @@ function myFunction() {
 		else query = team1.value + " " + team2.value + " game thread";
 	}
 
-	url = baseURL + "/graph";
+	console.log(query);
+
+	url = baseURL + "graph";
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
 	data = {
-		'startDate': startDate.value,
-		'endDate': endDate.value,
+		'gameDate': gameDate.value,
 		'team1': team1.value,
 		'team2': team2.value,
 		'query': query,
@@ -156,42 +156,55 @@ function myFunction() {
 			datalist.push(curr);
 		}
 
-		var ctx = document.getElementById("testchart").getContext("2d");
-		var scatter = new Chart(ctx, {
-			type: 'scatter',
-			data: {
-				datasets: [{
-					label: 'Scatter Dataset',
-					data: datalist,
-					borderColor: lineColor,
-					pointBorderColor: lineColor,
-					pointBackgroundColor: lineColor,
-					pointHoverBackgroundColor: lineColor,
-					pointHoverBorderColor: lineColor,
-					fill: true,
-					backgroundColor: fillColor,
-					lineTension: 0.1,
-				}]
-			},
-			options: {
-				scales: {
-					xAxes: [{
-						type: 'linear',
-						position: 'bottom',
-						ticks: {
-							callback: function(value, index, values) {
-								var date = new Date(value*1000);
-								var hours = date.getHours();
-								var minutes = "0"+date.getMinutes();
-								var seconds = "0"+date.getSeconds();
-								return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
-							}
-						}
-					}]
-				}
-			}
-		});
+		/*
+		var img = new Image();
+		img.src = 'eagles.jpg';
+		img.style.height = '500px';
+		img.style.width = '800px';
+		img.onload = function() {
+		*/
+			var ctx = document.getElementById("testchart").getContext("2d");
+			
+			//var fillPattern = ctx.createPattern(img, 'repeat');
 
+			var scatter = new Chart(ctx, {
+				type: 'scatter',
+				//width: '800px',
+				//height: '500px',
+				data: {
+					datasets: [{
+						label: 'Scatter Dataset',
+						data: datalist,
+						borderColor: lineColor,
+						pointBorderColor: lineColor,
+						pointBackgroundColor: lineColor,
+						pointHoverBackgroundColor: lineColor,
+						pointHoverBorderColor: lineColor,
+						fill: true,
+						backgroundColor: fillColor,
+						//backgroundColor: fillPattern,
+						lineTension: 0.1,
+					}]
+				},
+				options: {
+					scales: {
+						xAxes: [{
+							type: 'linear',
+							position: 'bottom',
+							ticks: {
+								callback: function(value, index, values) {
+									var date = new Date(value*1000);
+									var hours = date.getHours();
+									var minutes = "0"+date.getMinutes();
+									var seconds = "0"+date.getSeconds();
+									return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
+								}
+							}
+						}]
+					}
+				}
+			});
+		//}
 	}
 	xhr.send(json);
 }
