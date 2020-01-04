@@ -10,6 +10,7 @@ var loader = document.getElementById("loader");
 var titleText = document.getElementById("titleText");
 var subredditText = document.getElementById("subredditText");
 var gameDate = document.getElementById("gameDate");
+var testGraph = document.getElementById("testGraph");
 
 subredditText.style.display = "none";
 loader.style.display = "none";
@@ -45,7 +46,7 @@ league.addEventListener("change", function() {
 	}
 });
 
-function myFunction() {
+function createGraph() {
 
 	loader.style.display = "block";
 	chart.style.display = "none";
@@ -156,55 +157,111 @@ function myFunction() {
 			datalist.push(curr);
 		}
 
-		/*
-		var img = new Image();
-		img.src = 'eagles.jpg';
-		img.style.height = '500px';
-		img.style.width = '800px';
-		img.onload = function() {
-		*/
-			var ctx = document.getElementById("testchart").getContext("2d");
-			
-			//var fillPattern = ctx.createPattern(img, 'repeat');
+		var ctx = document.getElementById("testchart").getContext("2d");
 
-			var scatter = new Chart(ctx, {
-				type: 'scatter',
-				//width: '800px',
-				//height: '500px',
-				data: {
-					datasets: [{
-						label: 'Scatter Dataset',
-						data: datalist,
-						borderColor: lineColor,
-						pointBorderColor: lineColor,
-						pointBackgroundColor: lineColor,
-						pointHoverBackgroundColor: lineColor,
-						pointHoverBorderColor: lineColor,
-						fill: true,
-						backgroundColor: fillColor,
-						//backgroundColor: fillPattern,
-						lineTension: 0.1,
-					}]
-				},
-				options: {
-					scales: {
-						xAxes: [{
-							type: 'linear',
-							position: 'bottom',
-							ticks: {
-								callback: function(value, index, values) {
-									var date = new Date(value*1000);
-									var hours = date.getHours();
-									var minutes = "0"+date.getMinutes();
-									var seconds = "0"+date.getSeconds();
-									return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
-								}
+		var scatter = new Chart(ctx, {
+			type: 'scatter',
+			data: {
+				datasets: [{
+					label: 'Scatter Dataset',
+					data: datalist,
+					borderColor: lineColor,
+					pointBorderColor: lineColor,
+					pointBackgroundColor: lineColor,
+					pointHoverBackgroundColor: lineColor,
+					pointHoverBorderColor: lineColor,
+					fill: true,
+					backgroundColor: fillColor,
+					lineTension: 0.1,
+				}]
+			},
+			options: {
+				scales: {
+					xAxes: [{
+						type: 'linear',
+						position: 'bottom',
+						ticks: {
+							callback: function(value, index, values) {
+								var date = new Date(value*1000);
+								var hours = date.getHours();
+								var minutes = "0"+date.getMinutes();
+								var seconds = "0"+date.getSeconds();
+								return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
 							}
-						}]
-					}
+						}
+					}]
 				}
-			});
-		//}
+			}
+		});
 	}
 	xhr.send(json);
-}
+};
+
+function makeTestGraph() {
+	
+	var img = new Image();
+	img.src = 'images/eagles.jpg';
+	//img.style.height = '50px';
+	//img.style.width = '80px';
+	img.onload = function() {
+
+		var ctx = document.getElementById("testchart").getContext("2d");
+
+		var fillPattern = ctx.createPattern(img, 'repeat');
+
+		var scatter = new Chart(ctx, {
+			type: 'scatter',
+			height: '500px',
+			width: '800px',
+			data: {
+				datasets: [{
+					data: [{
+						x: -10,
+						y: 0
+					}, {
+						x: -9,
+						y: -3
+					}, {
+						x: -4,
+						y: 5
+					}, {
+						x: -3,
+						y: 8
+					}, {
+						x: 0,
+						y: -5
+					}, {
+						x: 5,
+						y: 6
+					}, {
+						x: 7,
+						y: 0
+					}, {
+						x: 9,
+						y: 2
+					}],
+					borderColor: '#C8AA76',
+					pointBorderColor: '#C8AA76',
+					pointBackgroundColor: '#C8AA76',
+					pointHoverBackgroundColor: '#C8AA76',
+					pointHoverBorderColor: '#C8AA76',
+					fill: true,
+					//backgroundColor: '#C9243F',
+					backgroundColor: fillPattern,
+					lineTension: 0.1,
+				}]
+			},
+			options: {
+				legend: {
+					display: false,
+				},
+				scales: {
+					xAxes: [{
+						type: 'linear',
+						position: 'bottom',
+					}]
+				}
+			}
+		});
+	}
+};

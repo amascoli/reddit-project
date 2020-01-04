@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Reddit Game Thread Analyzer</title>
-		<link rel="icon" href="tab_logo.png">
+		<link rel="icon" href="images/tab_logo.png">
 		<style>
 			#loaderdiv {
 				padding-top: 20px;
@@ -56,7 +56,10 @@
 					<input type="date" id="gameDate" min="2010-01-01" max="2030-12-21">
 				</th>
 				<th>
-					<button id="submit" onclick="myFunction()">Submit</button>
+					<button id="submit" onclick="createGraph()">Submit</button>
+				</th>
+				<th>
+					<button id="testGraph" onclick="makeTestGraph()">Test Graph</button>
 				</th>
 			</tr>
 		</table>
