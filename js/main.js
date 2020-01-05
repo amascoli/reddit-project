@@ -153,13 +153,15 @@ function createGraph() {
 };
 
 function calculateAndGraph(resp, lineColor, fillColor) {
-	loader.style.display = "none";
-	chart.style.display = "block";
-
 	if (resp["comments"]["errorStatus"] == true) {
+		loader.style.display = "none";
+		subredditText.style.display = "none";
 		titleText.innerHTML = resp["comments"]["errorMessage"];
 		return null;
 	}
+
+	loader.style.display = "none";
+	chart.style.display = "block";
 
 	subredditText.style.display = "block";
 	subredditText.innerHTML = "r/" + resp["comments"]["subreddit"];

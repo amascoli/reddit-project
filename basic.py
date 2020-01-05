@@ -55,9 +55,9 @@ class team_reddit_api(object):
 		return response
 
 	def post_from_url(self, payload):
-		post = self.reddit.submission(url=payload['url'])
-		
-		if post == None:
+		try:
+			post = self.reddit.submission(url=payload['url'])
+		except Exception:
 			response = {'errorStatus': True}
 			response['errorMessage'] = 'Invalid url provided.'
 			return response
