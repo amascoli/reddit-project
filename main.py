@@ -31,6 +31,17 @@ class MyController(object):
 			output['message'] = str(ex)
 		return json.dumps(output)
 
+	def POST_URL(self):
+		output = {'result' : 'success'}
+		try:
+			payload = json.loads(cherrypy.request.body.read().decode("utf-8"))
+			comments = self.db.post_from_url(payload)
+			output['comments'] = comments
+		except Exception as ex:
+			output['result'] = 'failure'
+			output['message'] = str(ex)
+		return json.dumps(output)
+
 	def POST_TEST(self):
 		output = {'result' : 'success'}
 		output['message'] = 'test'
@@ -43,12 +54,12 @@ def start_service():
 
 	dispatcher = cherrypy.dispatch.RoutesDispatcher()
 
-	#dispatcher.connect('opt_query', '/:league/:query', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
-	dispatcher.connect('opt_query', '/graph', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('opt_query', '/graph/search', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
+	dispatcher.connect('opt_query', '/graph/url', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 	dispatcher.connect('opt_test', '/', controller=optcon, action='OPTIONS', conditions=dict(method=['OPTIONS']))
 
-	#dispatcher.connect('post_query', '/:league/:query', controller=mycon, action='POST_QUERY', conditions=dict(method=['POST']))
-	dispatcher.connect('post_query', '/graph', controller=mycon, action='POST_QUERY', conditions=dict(method=['POST']))
+	dispatcher.connect('post_query', '/graph/search', controller=mycon, action='POST_QUERY', conditions=dict(method=['POST']))
+	dispatcher.connect('post_query', '/graph/url', controller=mycon, action='POST_URL', conditions=dict(method=['POST']))
 	dispatcher.connect('post_test', '/', controller=mycon, action='POST_TEST', conditions=dict(method=['POST']))
 
 	conf = {

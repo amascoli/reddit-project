@@ -11,6 +11,8 @@ var titleText = document.getElementById("titleText");
 var subredditText = document.getElementById("subredditText");
 var gameDate = document.getElementById("gameDate");
 var testGraph = document.getElementById("testGraph");
+var postUrl = document.getElementById("postUrl");
+var submitUrl = document.getElementById("submitUrl");
 
 subredditText.style.display = "none";
 loader.style.display = "none";
@@ -46,14 +48,37 @@ league.addEventListener("change", function() {
 	}
 });
 
+function createGraphUrl() {
+	loader.style.display = "block";
+	chart.style.display = "none";
+	subredditText.display = "none";
+	titleText.innerHTML = "Fetching Game Thread Data...";
+
+	post = postUrl.value;
+
+	url = baseURL + 'graph/url';
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", url, true);
+	data = {
+		'url': post,
+	};
+	json = JSON.stringify(data);
+
+	xhr.onload = function(e) {
+		resp = JSON.parse(xhr.responseText);
+		console.log(resp);
+		calculateAndGraph(resp, "#000000", "#C0C0C0");
+	}
+	xhr.send(json);
+}
+
 function createGraph() {
 
 	loader.style.display = "block";
 	chart.style.display = "none";
 	subredditText.display = "none";
 	titleText.innerHTML = "Fetching Game Thread Data...";
-
-	var datalist = [];
 
 	subreddit = "";
 	query = "";
@@ -105,7 +130,7 @@ function createGraph() {
 
 	console.log(query);
 
-	url = baseURL + "graph";
+	url = baseURL + "graph/search";
 
 	var xhr = new XMLHttpRequest();
 	xhr.open("POST", url, true);
@@ -119,83 +144,91 @@ function createGraph() {
 	json = JSON.stringify(data);
 
 	xhr.onload = function(e) {
-
-		loader.style.display = "none";
-		chart.style.display = "block";
-
 		resp = JSON.parse(xhr.responseText);
-
 		console.log(resp);
-
-		if (resp["comments"]["errorStatus"] == true) {
-			titleText.innerHTML = resp["comments"]["errorMessage"];
-			return null;
-		}
-
-		subredditText.style.display = "block";
-		subredditText.innerHTML = "r/" + subreddit;
-		titleText.innerHTML = resp["comments"]["name"];
-
-		var comments = resp["comments"]["comments"];
-
-		comments.sort(function compare(kv1, kv2) {
-			return kv1['time'] - kv2['time'];
-		});
-
-		var score = 0;
-
-		for (var i=0; i<comments.length; i++) {
-
-			console.log(comments[i]);
-
-			score = score - 0.4 + comments[i]['score'];
-
-			var curr = {
-				'x': comments[i]['time'],
-				'y': score,
-			};
-			datalist.push(curr);
-		}
-
-		var ctx = document.getElementById("testchart").getContext("2d");
-
-		var scatter = new Chart(ctx, {
-			type: 'scatter',
-			data: {
-				datasets: [{
-					label: 'Scatter Dataset',
-					data: datalist,
-					borderColor: lineColor,
-					pointBorderColor: lineColor,
-					pointBackgroundColor: lineColor,
-					pointHoverBackgroundColor: lineColor,
-					pointHoverBorderColor: lineColor,
-					fill: true,
-					backgroundColor: fillColor,
-					lineTension: 0.1,
-				}]
-			},
-			options: {
-				scales: {
-					xAxes: [{
-						type: 'linear',
-						position: 'bottom',
-						ticks: {
-							callback: function(value, index, values) {
-								var date = new Date(value*1000);
-								var hours = date.getHours();
-								var minutes = "0"+date.getMinutes();
-								var seconds = "0"+date.getSeconds();
-								return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
-							}
-						}
-					}]
-				}
-			}
-		});
+		calculateAndGraph(resp, lineColor, fillColor);
 	}
+
 	xhr.send(json);
 };
+
+function calculateAndGraph(resp, lineColor, fillColor) {
+	loader.style.display = "none";
+	chart.style.display = "block";
+
+	if (resp["comments"]["errorStatus"] == true) {
+		titleText.innerHTML = resp["comments"]["errorMessage"];
+		return null;
+	}
+
+	subredditText.style.display = "block";
+	subredditText.innerHTML = "r/" + resp["comments"]["subreddit"];
+	titleText.innerHTML = resp["comments"]["name"];
+
+	var comments = resp["comments"]["comments"];
+
+	comments.sort(function compare(kv1, kv2) {
+		return kv1['time'] - kv2['time'];
+	});
+
+	var score = 0;
+	var datalist = [];
+
+	for (var i=0; i<comments.length; i++) {
+
+		console.log(comments[i]);
+
+		score = score - 0.4 + comments[i]['score'];
+
+		var curr = {
+			'x': comments[i]['time'],
+			'y': score,
+		};
+		datalist.push(curr);
+	}
+
+	displayGraph(datalist, lineColor, fillColor);
+}
+
+function displayGraph(datalist, lineColor, fillColor) {
+
+	var ctx = document.getElementById("testchart").getContext("2d");
+
+	var scatter = new Chart(ctx, {
+		type: 'scatter',
+		data: {
+			datasets: [{
+				label: 'Scatter Dataset',
+				data: datalist,
+				borderColor: lineColor,
+				pointBorderColor: lineColor,
+				pointBackgroundColor: lineColor,
+				pointHoverBackgroundColor: lineColor,
+				pointHoverBorderColor: lineColor,
+				fill: true,
+				backgroundColor: fillColor,
+				lineTension: 0.1,
+			}]
+		},
+		options: {
+			scales: {
+				xAxes: [{
+					type: 'linear',
+					position: 'bottom',
+					ticks: {
+						callback: function(value, index, values) {
+							var date = new Date(value*1000);
+							var hours = date.getHours();
+							var minutes = "0"+date.getMinutes();
+							var seconds = "0"+date.getSeconds();
+							return hours+":"+minutes.substr(-2)+":"+seconds.substr(-2);
+						}
+					}
+				}]
+			}
+		}
+	});
+}
 
 function makeTestGraph() {
 	

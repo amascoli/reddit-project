@@ -22,6 +22,7 @@ class team_reddit_api(object):
 	def get_comments(self, post):
 
 		response = {'name': post.title}
+		response['subreddit'] = post.subreddit.display_name
 
 		try:
 			post.comments.replace_more(limit=100)
@@ -52,6 +53,17 @@ class team_reddit_api(object):
 		response['errorStatus'] = False
 		
 		return response
+
+	def post_from_url(self, payload):
+		post = self.reddit.submission(url=payload['url'])
+		
+		if post == None:
+			response = {'errorStatus': True}
+			response['errorMessage'] = 'Invalid url provided.'
+			return response
+
+		print(post.title)
+		return self.get_comments(post)
 
 	# query will always be "team1 team2 game thread"
 	# can use team_to_subreddit to get team subreddits
